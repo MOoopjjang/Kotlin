@@ -4,7 +4,9 @@ import com.mooop.m.data.Category
 import com.mooop.m.data.Message
 import com.mooop.m.data.Movie as Movie
 import com.mooop.m.enums.EVENT
+import com.mooop.m.enums.FSTORE
 import com.mooop.m.module.ISubscribe
+import com.mooop.m.module.MFileStore
 import com.mooop.m.module.MObserver
 
 
@@ -25,6 +27,8 @@ object CategoryManager : BaseManager<Category> , ISubscribe{
     override fun  registry(data: Category): Boolean {
         if(data !in listCategory){
             listCategory.add(data)
+
+//            MFileStore.setTag(FSTORE.CATEGORY_W).insertData(data)
         }
         return true
     }
@@ -49,10 +53,6 @@ object CategoryManager : BaseManager<Category> , ISubscribe{
         val addFunc: (Message<*>)->Unit = {msg->
             val nData = (msg.body as Movie)
             listCategory.filter { it.name == nData.category }.map { it.idxList.add(nData.Path) }
-//            var dd = listCategory.filter { it.name == nData.category }.map{
-//                it.idxList
-//            }
-//            dd.forEach { println("${it}") }
         }
 
         val delFunc: (Message<*>)->Unit = {msg->
@@ -72,21 +72,11 @@ object CategoryManager : BaseManager<Category> , ISubscribe{
 
 
 fun main(){
-    CategoryManager.registry(Category("action"))
-    CategoryManager.getRegistryItems().forEach {
-        println("${it.name}")
-    }
+
+    CategoryManager.registry(Category("japan"))
+    CategoryManager.registry(Category("kor"))
 
 
-//    val addFunc: (Message<*>)->Unit = {msg->
-//        val nData = (msg.body as Movie)
-//        CategoryManager.listCategory.filter { it.name == nData.category }.map { it.idxList.add(nData.Path) }
-//    }
-
-
-    val m:Movie = Movie("/aaa/bbb/ccc.mp4" , "action" , 100)
-//    MObserver.registry(EVENT.FILE_ADD , CategoryManager)
-    MObserver.notify(EVENT.FILE_ADD , Message<Movie>(EVENT.FILE_ADD , "OK" , m) , ChangeDirManager)
 
 
 }
